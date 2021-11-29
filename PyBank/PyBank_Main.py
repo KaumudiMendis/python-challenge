@@ -20,22 +20,27 @@ Month_movement=[]
 Greatest_increase=["",0]
 Greatest_decrease=["",99999999999999999999999]
 
-
+#Read the csv file and convert it into a list of dictionaries
 with open(Input_file) as Financial_data:
     
     # Input_file_reader specifies delimiter and variable that holds contents
     
-    csv_reader = csv.reader(Financial_data, delimiter=',')   
+    reader = csv.reader(Financial_data, delimiter=',')   
     # Reading the header row
     
-    csv_header = next(csv_reader)
+    header = next(reader)
+    # Extract first row to avoid appending to net_change_list
+    first_row=next(reader)
+    Total_months=Total_months+1
+    Total=int(first_row[1])
+    Previous_profitnloss=int(first_row[1])
+                   
+    for row in reader:    
     
-    for row in csv_reader:    
-    
-    #The total number of months included in the dataset
+        #The total number of months included in the dataset
         Total_months=Total_months+1
 
-    #The net total amount of "Profit/Losses" over the entire period
+        #The net total amount of "Profit/Losses" over the entire period
         Total=Total+int(row[1])
 
     #Calculate the changes in "Profit/Losses" over the entire period, then find the average of those changes
@@ -45,7 +50,7 @@ with open(Input_file) as Financial_data:
         Previous_profitnloss = int(row[1])
         Profitnlosschange_list = Profitnlosschange_list+[Profitnlosschange]
         Month_movement = Month_movement+[row[0]]
-        Average_profitnlosschange = sum(Profitnlosschange_list)/len(Profitnlosschange_list)   
+       
         
 #The greatest increase in profits (date and amount) over the entire period
         if Profitnlosschange>Greatest_increase[1]:
@@ -57,13 +62,16 @@ with open(Input_file) as Financial_data:
             Greatest_decrease[0]=row[0]
             Greatest_decrease[1]=Profitnlosschange
 
+                   
+#Average month by month change
+Average_profitnlosschange = sum(Profitnlosschange_list)/len(Profitnlosschange_list)                    
 
 Analysis_output=(
     f"\nFinancial Analysis\n"
     f"-----------------------\n"
     f"Total Months: {Total_months}\n"
     f"Total: ${Total}\n"
-    f"Average Change: ${Average_profitnlosschange}\n"
+    f"Average Change: $ {Average_profitnlosschange:2f}\n"
     f"Greatest Increase in Profits:{Greatest_increase[0]}(${Greatest_increase[1]}\n"
     f"Greatest Decrease in Profits:{Greatest_decrease[0]}(${Greatest_decrease[1]}\n")
     
